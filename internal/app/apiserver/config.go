@@ -1,6 +1,6 @@
 package apiserver
 
-import "github.com/RomanAvdeenko/http-rest-api/store"
+import "github.com/RomanAvdeenko/http-rest-api/internal/app/store"
 
 // Config ...
 type Config struct {

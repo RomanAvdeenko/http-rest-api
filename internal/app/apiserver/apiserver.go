@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/RomanAvdeenko/http-rest-api/store"
+	"github.com/RomanAvdeenko/http-rest-api/internal/app/store"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
@@ -29,7 +29,7 @@ func New(c *Config) *APIServer {
 
 //Start ...
 func (s *APIServer) Start() error {
-	if err := s.configureLoger(); err != nil {
+	if err := s.configureLogger(); err != nil {
 		return err
 	}
 
@@ -44,7 +44,7 @@ func (s *APIServer) Start() error {
 	return http.ListenAndServe(fmt.Sprintf(":%d", s.config.BindAddr), s.router)
 }
 
-func (s *APIServer) configureLoger() error {
+func (s *APIServer) configureLogger() error {
 	level, err := logrus.ParseLevel(s.config.LogLevel)
 	if err != nil {
 		return err
