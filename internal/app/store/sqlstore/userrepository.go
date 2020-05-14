@@ -1,6 +1,11 @@
 package sqlstore
 
-import "github.com/RomanAvdeenko/http-rest-api/internal/app/model"
+import (
+	"database/sql"
+
+	"github.com/RomanAvdeenko/http-rest-api/internal/app/model"
+	"github.com/RomanAvdeenko/http-rest-api/internal/app/store"
+)
 
 // UserRepository ...
 type UserRepository struct {
@@ -9,6 +14,7 @@ type UserRepository struct {
 
 //Create ...
 func (r *UserRepository) Create(u *model.User) error {
+
 	if err := u.Validate(); err != nil {
 		return err
 	}
@@ -35,6 +41,9 @@ func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 		&u.Email,
 		&u.EncryptedPassword,
 	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, store.ErrRecordNotFound
+		}
 		return nil, err
 	}
 	return u, nil
