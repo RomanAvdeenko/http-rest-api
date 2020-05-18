@@ -1,3 +1,4 @@
 bind_addr = 8080
 log_level = "debug"
 database_url = "host=pbx-1.hl.ua dbname=restapi_dev user = restapi_master password = jscjkklqeuiw38d"
+session_key = "8uey463gdgfDs3t45dgVdhdtet5hdhdksldnsuyyYYza66qoOq2"

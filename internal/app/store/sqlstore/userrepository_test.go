@@ -40,3 +40,20 @@ func TestUserRepository_FindByEmail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, u)
 }
+func TestUserRepository_Find(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+	defer teardown("users")
+
+	s := sqlstore.New(db)
+
+	u1 := model.TestUser(t)
+	s.User().Create(u1)
+
+	u2, err := s.User().Find(u1.ID)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, u2)
+	assert.Equal(t, u1.ID, u2.ID)
+	assert.Equal(t, u1.Email, u2.Email)
+	assert.Equal(t, u1.EncryptedPassword, u2.EncryptedPassword)
+}
