@@ -9,6 +9,11 @@ import (
 	"github.com/gorilla/sessions"
 )
 
+const (
+	certFilePath = `/etc/letsencrypt/live/avdeenko.com/fullchain.pem`
+	keyFilePath  = `/etc/letsencrypt/live/avdeenko.com/privkey.pem`
+)
+
 // Start ...
 func Start(config *Config) error {
 	db, err := newDB(config.DatabaseURL)
@@ -21,7 +26,7 @@ func Start(config *Config) error {
 	sessionStore := sessions.NewCookieStore([]byte(config.SessionKey)) //gorilla/sessions
 	srv := newServer(store, sessionStore)
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", config.BindAddr), srv)
+	return http.ListenAndServeTLS(fmt.Sprintf(":%d", config.BindAddr), certFilePath, keyFilePath, srv)
 }
 
 func newDB(databaseURL string) (*sql.DB, error) {
