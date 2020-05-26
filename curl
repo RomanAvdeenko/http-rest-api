@@ -1,0 +1,13 @@
+curl -d '{"email":"roman@avdeenko.com", "password":"123123"}'  -H "Content-Type: application/json"  -X POST {{ http://localhost:8080/users }}
+curl -v -d '{"email":"roman@avdeenko.com", "password":"123123"}'  -H "Content-Type: application/json"  -X POST {{ http://localhost:8080/sessions }} 
+curl -v -H "Origin: google.com" --cookie "auth_session=MTU4OTkxMjU3OHxEdi1CQkFFQ180SUFBUkFCRUFBQUhfLUNBQUVHYzNSeWFXNW5EQWtBQjNWelpYSmZhV1FFZFdsdWRBWUNBQTg9fLJPsnqGeKsOVS1WRydGkf_DyuxaVkdlKR1hPlKzJ-9p" http://localhost:8080/private/whoami
+
+curl -v  http://localhost:8080/status -H "Origin: google.com"
+
+curl -H "Origin: http://example.com" -H "Access-Control-Request-Method: POST" -H "Access-Control-Request-Headers: Content-Language" -X OPTIONS --verbose  http://localhost:8080/status
+#
+#
+
+http -v  POST http://localhost:8080/users email=yes@hl.ua password=911911 "Origin: hl.ua"
+http -v  POST http://localhost:8080/sessions email=yes@hl.ua password=911911 "Origin: hl.ua"
+http -v --session=user http://localhost:8080/private/whoami "Origin: hl.ua"

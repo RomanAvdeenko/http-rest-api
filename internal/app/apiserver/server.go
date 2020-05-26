@@ -58,14 +58,25 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *server) configureRouter() {
 	s.router.Use(s.setRequestID)
 	s.router.Use(s.logRequest)
-	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
+	s.router.Use(handlers.CORS(
+		handlers.AllowedOrigins([]string{"google.com", "google1.com", "http://localhost", "127.0.0.1", "hl.ua"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Cookie", "Set-Cookie", "Authorization", "x-auth", "Authorization"}),
+		handlers.AllowCredentials(),
+		handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"}),
+	))
 
 	s.router.HandleFunc("/users", s.handleUsersCreate()).Methods(http.MethodPost)
 	s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods(http.MethodPost)
+	s.router.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		w.Write([]byte(`{"status":"ok"}`))
+	})
 
 	private := s.router.PathPrefix("/private").Subrouter()
+
 	private.Use(s.authenticateUser)
-	private.HandleFunc("/whoami", s.handleHwoAmI()).Methods(http.MethodGet)
+	private.HandleFunc("/whoami", s.handleWhoAmI())
+	//.Methods(http.MethodGet, http.MethodOptions)
 }
 
 func (s *server) authenticateUser(next http.Handler) http.Handler {
@@ -93,7 +104,7 @@ func (s *server) authenticateUser(next http.Handler) http.Handler {
 }
 
 // Handler требующий зарегистрированного пользователя
-func (s *server) handleHwoAmI() http.HandlerFunc {
+func (s *server) handleWhoAmI() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s.respond(w, r, http.StatusOK, r.Context().Value(ctxKeyUser).(*model.User))
 	}
@@ -102,7 +113,7 @@ func (s *server) handleHwoAmI() http.HandlerFunc {
 func (s *server) setRequestID(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := uuid.New().String()
-		w.Header().Set("X-Request-ID", id)
+		w.Header().Add("X-Request-ID", id)
 		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), ctxKeyRequestID, id)))
 	})
 }
@@ -129,7 +140,6 @@ func (s *server) logRequest(next http.Handler) http.Handler {
 	})
 }
 
-// Регистрация
 func (s *server) handleUsersCreate() http.HandlerFunc {
 	// Ожидаем в запросе
 	type request struct {
@@ -157,7 +167,6 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 	}
 }
 
-//Аутентификация
 func (s *server) handleSessionsCreate() http.HandlerFunc {
 	type request struct {
 		Email    string `json:"email"`
@@ -199,7 +208,7 @@ func (s *server) error(w http.ResponseWriter, r *http.Request, code int, err err
 
 // respond Helper
 func (s *server) respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
-	w.Header().Add("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	if data != nil {
 		json.NewEncoder(w).Encode(data)
