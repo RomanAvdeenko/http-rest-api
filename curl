@@ -8,6 +8,7 @@ curl -H "Origin: http://example.com" -H "Access-Control-Request-Method: POST" -H
 #
 #
 
-http -v  POST http://localhost:8080/users email=yes@hl.ua password=911911 "Origin: hl.ua"
-http -v  POST http://localhost:8080/sessions email=yes@hl.ua password=911911 "Origin: hl.ua"
-http -v --session=user http://localhost:8080/private/whoami "Origin: hl.ua"
+http -v  POST http://avdeenko.com:8080/users email=yes@hl.ua password=911911 "Origin: hl.ua"
+http -v  POST http://avdeenko.com:8080/sessions email=yes@hl.ua password=911911 "Origin: hl.ua"
+http -v --session=user http://avdeenko.com:8080/private/whoami "Origin: hl.ua"
+http -v --session=user http://avdeenko.com:8080/status "Origin: hl.ua"
