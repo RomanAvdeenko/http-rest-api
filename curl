@@ -9,6 +9,6 @@ curl -H "Origin: http://example.com" -H "Access-Control-Request-Method: POST" -H
 #
 
 http -v  POST https://avdeenko.com:8443/users email=yes@hl.ua password=911911 "Origin: hl.ua"
-http -v  POST https://avdeenko.com:8443/sessions email=yes@hl.ua password=911911 "Origin: hl.ua"
+http -v  POST --session=user https://avdeenko.com:8443/sessions email=yes@hl.ua password=911911 "Origin: hl.ua"
 http -v --session=user https://avdeenko.com:8443/private/whoami "Origin: hl.ua"
-http -v --session=user https://avdeenko.com:8443/status "Origin: hl.ua"
+http -v  https://avdeenko.com:8443/status "Origin: hl.ua"

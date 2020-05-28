@@ -59,14 +59,16 @@ func (s *server) configureRouter() {
 	s.router.Use(s.setRequestID)
 	s.router.Use(s.logRequest)
 	s.router.Use(handlers.CORS(
-		handlers.AllowedOrigins([]string{"google.com", "google1.com", "http://localhost", "127.0.0.1", "hl.ua"}),
-		handlers.AllowedHeaders([]string{"Content-Type", "Cookie", "Set-Cookie", "Authorization", "x-auth", "Authorization"}),
+		handlers.AllowedOrigins([]string{"https://avdeenko.com"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "cache"}),
 		handlers.AllowCredentials(),
 		handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"}),
 	))
 
 	s.router.HandleFunc("/users", s.handleUsersCreate()).Methods(http.MethodPost)
-	s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods(http.MethodPost)
+
+	s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods(http.MethodPost, http.MethodOptions)
+
 	s.router.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		w.Write([]byte(`{"status":"ok"}`))
@@ -75,8 +77,7 @@ func (s *server) configureRouter() {
 	private := s.router.PathPrefix("/private").Subrouter()
 
 	private.Use(s.authenticateUser)
-	private.HandleFunc("/whoami", s.handleWhoAmI())
-	//.Methods(http.MethodGet, http.MethodOptions)
+	private.HandleFunc("/whoami", s.handleWhoAmI()).Methods(http.MethodGet, http.MethodOptions)
 }
 
 func (s *server) authenticateUser(next http.Handler) http.Handler {
