@@ -65,7 +65,7 @@ func (s *server) configureRouter() {
 		handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"}),
 	))
 
-	s.router.HandleFunc("/users", s.handleUsersCreate()).Methods(http.MethodPost)
+	s.router.HandleFunc("/users", s.handleUsersCreate()).Methods(http.MethodPost, http.MethodOptions)
 
 	s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods(http.MethodPost, http.MethodOptions)
 
@@ -198,7 +198,9 @@ func (s *server) handleSessionsCreate() http.HandlerFunc {
 			return
 		}
 
-		s.respond(w, r, http.StatusOK, nil)
+		s.respond(w, r, http.StatusOK, struct {
+			Status string `json:"status"`
+		}{"created"})
 	}
 }
 
